@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using MySql.Data.MySqlClient;
+using TestTaskKolgatina.Controllers;
 
 namespace TestTaskKolgatina
 {
@@ -9,7 +10,6 @@ namespace TestTaskKolgatina
     {
         public static void Main(string[] args)
         {
-            ConnectToDatabase();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -19,35 +19,5 @@ namespace TestTaskKolgatina
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
-        //MySqlConnection
-        static void ConnectToDatabase()
-        {
-            string connstr = string.Format("Server=localhost; database={0}; UID=root; password=root", "Employee");
-            try
-            {
-                var conn = new MySqlConnection();
-                conn.ConnectionString = connstr;
-                conn.Open();
-
-                string sql = "describe Employee.employee;";
-                MySqlCommand cmd = new MySqlCommand(sql, conn);
-
-                MySqlDataReader rdr = cmd.ExecuteReader();
-
-                while (rdr.Read())
-                {
-                    Console.WriteLine(rdr.GetString(0));
-                }
-                rdr.Close();
-                conn.Close();
-            }
-            catch (MySqlException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-  
     }
 }
