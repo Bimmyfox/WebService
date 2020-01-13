@@ -12,6 +12,6 @@ namespace TestTaskKolgatina.Models
         public string Phone { get; set; }
         public int CompanyId { get; set; }
         public string Passport { get; set; }
-        // Passport { Type string Number string }
+        //TODO: Passport { Type string Number string }
     }
 }
