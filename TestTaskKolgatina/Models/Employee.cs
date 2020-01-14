@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TestTaskKolgatina.Models
 {
@@ -11,7 +10,7 @@ namespace TestTaskKolgatina.Models
         public string Surname { get; set; }
         public string Phone { get; set; }
         public int CompanyId { get; set; }
-        public string Passport { get; set; }
+        public int IdPassport { get; set; }
         //TODO: Passport { Type string Number string }
     }
 }

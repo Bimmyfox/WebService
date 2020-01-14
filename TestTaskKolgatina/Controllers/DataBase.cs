@@ -11,6 +11,6 @@ namespace TestTaskKolgatina.Controllers
         }
 
         public DbSet<Employee> Employees { get; set; }
-
+        public DbSet<Passport> Passports { get; set; }
     }
 }

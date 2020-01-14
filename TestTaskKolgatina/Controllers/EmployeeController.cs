@@ -5,10 +5,10 @@ using TestTaskKolgatina.Models;
 using Microsoft.EntityFrameworkCore;
 
 /*
-1. Добавлять сотрудников, в ответ должен приходить Id добавленного сотрудника.
-2. Удалять сотрудников по Id.
-3. Выводить список сотрудников для указанной компании. Все доступные поля.
-4. Изменять сотрудника по его Id. Изменения должно быть только тех полей, которые указаны в запросе.
+1. Добавлять сотрудников, в ответ должен приходить Id добавленного сотрудника. +
+2. Удалять сотрудников по Id. +
+3. Выводить список сотрудников для указанной компании. Все доступные поля. +
+4. Изменять сотрудника по его Id. Изменения должно быть только тех полей, которые указаны в запросе. +
  */
 
 
@@ -17,7 +17,7 @@ namespace TestTaskKolgatina.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController
+    public class EmployeeController 
     {
         readonly DataBase _context;
 
@@ -37,31 +37,65 @@ namespace TestTaskKolgatina.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
-            var todoItem = await _context.Employees.FindAsync(id);
+            var employee = await _context.Employees.FindAsync(id);
 
-            if (todoItem == null)
+            if (employee == null)
+            {
+                return null;
+            }
+            
+            return employee;
+        }
+
+        // DELETE: api/employee/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        {
+            var employee = await _context.Employees.FindAsync(id);
+            if (employee == null)
             {
                 return null;
             }
 
-            return todoItem;
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+
+            return employee;
         }
 
-      
-        //TODO: [HttpPut]
-        //public static string AddEmployee()
-        //{
-        //    return "INSERT INTO employee (name, surname, Phone, CompanyId, Passport) VALUES ('Mike','Buganoff','5830948350', '3', '3593874')";
-        //}
 
-        //TODOpublic static string DeleteEmployee(int IdEmployee)
-        //{
-        //    return String.Format("DELETE from employee where Id = {0}", IdEmployee);
-        //}
+        // POST: api/employees
+        [HttpPost]
+        public async Task<ActionResult<int>> PostEmployee(Employee employee)
+        {
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync();
+            
+            return employee.Id;
+        }
 
-        //TODO:[]
-        //public void EditEmployeeInfo(int IdEmployee)
-        //{
-        //}
+        // PUT: api/employees/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutEmployee(int id, Employee employee)
+         {
+            if (id != employee.Id)
+            {
+                return null;
+                //BadRequest();
+            }
+
+            _context.Entry(employee).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+
+            return null;
+        }
     }
 }
