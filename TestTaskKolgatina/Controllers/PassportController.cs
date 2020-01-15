@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TestTaskKolgatina.Models;
 using Microsoft.EntityFrameworkCore;
-
+using System.Linq;
 
 namespace TestTaskKolgatina.Controllers
 {
@@ -13,23 +12,26 @@ namespace TestTaskKolgatina.Controllers
     {
         readonly DataBase _context;
 
+
         public PassportController(DataBase context)
         {
             _context = context;
         }
 
+
         //GET: api/passport
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Passport>>> GetPassport()
+        public ActionResult<IEnumerable<Passport>> GetPassport()
         {
-            return await _context.Passports.ToListAsync();
+            return _context.Passports.ToList();
         }
+
 
         // GET: api/passport/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Passport>> GetPassport(int id)
+        public ActionResult<Passport> GetPassport(int id)
         {
-            var passport = await _context.Passports.FindAsync(id);
+            var passport =  _context.Passports.Find(id);
 
             if (passport == null)
             {
@@ -39,18 +41,19 @@ namespace TestTaskKolgatina.Controllers
             return passport;
         }
 
+
         // DELETE: api/passport/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Passport>> DeletePassport(int id)
+        public ActionResult<Passport> DeletePassport(int id)
         {
-            var passport = await _context.Passports.FindAsync(id);
+            var passport = _context.Passports.Find(id);
             if (passport == null)
             {
                 return null;
             }
 
             _context.Passports.Remove(passport);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return passport;
         }
@@ -58,17 +61,17 @@ namespace TestTaskKolgatina.Controllers
 
         // POST: api/passport
         [HttpPost]
-        public async Task<ActionResult<int>> PostPassport(Passport passport)
+        public ActionResult<int> PostPassport(Passport passport)
         {
             _context.Passports.Add(passport);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return passport.Id;
         }
 
         // PUT: api/passport/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPassport(int id, Passport passport)
+        public IActionResult PutPassport(int id, Passport passport)
         {
             if (id != passport.Id)
             {
@@ -80,7 +83,7 @@ namespace TestTaskKolgatina.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+               _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {

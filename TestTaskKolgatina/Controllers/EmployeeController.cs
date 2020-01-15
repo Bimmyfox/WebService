@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TestTaskKolgatina.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
 
 /*
 1. Добавлять сотрудников, в ответ должен приходить Id добавленного сотрудника. +
@@ -28,37 +29,43 @@ namespace TestTaskKolgatina.Controllers
 
         // GET: api/employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        public ActionResult<IEnumerable<Employee>> GetEmployees()
         {
-            return await _context.Employees.ToListAsync();
+            return _context.Employees.ToList();
         }
 
         // GET: api/employees/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Employee>> GetEmployee(int id)
+        public ActionResult<Employee> GetEmployee(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = _context.Employees.Find(id);
 
             if (employee == null)
             {
                 return null;
             }
-            
+
             return employee;
+
         }
 
         // DELETE: api/employee/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        public ActionResult<Employee> DeleteEmployee(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            //using (var context = CreateContext())
+            {
+            }
+                var employee = _context.Employees.Find(id);
+            //var employee =  _context.Employees
+
             if (employee == null)
             {
                 return null;
             }
 
             _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return employee;
         }
@@ -66,17 +73,17 @@ namespace TestTaskKolgatina.Controllers
 
         // POST: api/employees
         [HttpPost]
-        public async Task<ActionResult<int>> PostEmployee(Employee employee)
+        public ActionResult<int> PostEmployee(Employee employee)
         {
             _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             
             return employee.Id;
         }
 
         // PUT: api/employees/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(int id, Employee employee)
+        public IActionResult PutEmployee(int id, Employee employee)
          {
             if (id != employee.Id)
             {
@@ -88,7 +95,7 @@ namespace TestTaskKolgatina.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
