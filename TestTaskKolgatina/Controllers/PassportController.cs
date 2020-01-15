@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using TestTaskKolgatina.Models;
+using TestTaskKolgatina.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
@@ -10,10 +11,10 @@ namespace TestTaskKolgatina.Controllers
     [ApiController]
     public class PassportController
     {
-        readonly DataBase _context;
+        readonly EmployeeContext _context;
 
 
-        public PassportController(DataBase context)
+        public PassportController(EmployeeContext context)
         {
             _context = context;
         }

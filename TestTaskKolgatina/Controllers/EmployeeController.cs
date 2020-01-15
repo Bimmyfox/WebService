@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TestTaskKolgatina.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using TestTaskKolgatina.Data;
 
 
 /*
@@ -11,7 +12,7 @@ using System.Linq;
 3. Выводить список сотрудников для указанной компании. Все доступные поля. +
 4. Изменять сотрудника по его Id. Изменения должно быть только тех полей, которые указаны в запросе. +
  */
-
+ 
 
 namespace TestTaskKolgatina.Controllers
 {
@@ -20,9 +21,9 @@ namespace TestTaskKolgatina.Controllers
     [ApiController]
     public class EmployeeController 
     {
-        readonly DataBase _context;
+        readonly EmployeeContext _context;
 
-        public EmployeeController(DataBase context)
+        public EmployeeController(EmployeeContext context)
         {
             _context = context;
         }
@@ -31,14 +32,15 @@ namespace TestTaskKolgatina.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Employee>> GetEmployees()
         {
-            return _context.Employees.ToList();
+            return _context.Employees.Include(s => s.Passport).ToList();
         }
 
-        // GET: api/employees/5
-        [HttpGet("{id}")]
-        public ActionResult<Employee> GetEmployee(int id)
+        
+        // GET: api/employees/6
+        [HttpGet("{companyId}")]
+        public IQueryable<Employee> GetEmployeeByComanyId(int companyId)
         {
-            var employee = _context.Employees.Find(id);
+            var employee = _context.Employees.Where(emp => emp.CompanyId == companyId);
 
             if (employee == null)
             {
@@ -48,6 +50,7 @@ namespace TestTaskKolgatina.Controllers
             return employee;
 
         }
+
 
         // DELETE: api/employee/5
         [HttpDelete("{id}")]
@@ -83,7 +86,7 @@ namespace TestTaskKolgatina.Controllers
 
         // PUT: api/employees/5
         [HttpPut("{id}")]
-        public IActionResult PutEmployee(int id, Employee employee)
+        public ActionResult<Employee> PutEmployee(int id, Employee employee)
          {
             if (id != employee.Id)
             {
@@ -102,7 +105,8 @@ namespace TestTaskKolgatina.Controllers
                 throw;
             }
 
-            return null;
+            return employee;
         }
+
     }
 }

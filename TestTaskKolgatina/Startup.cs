@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TestTaskKolgatina.Controllers;
+using TestTaskKolgatina.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace TestTaskKolgatina
@@ -20,7 +20,7 @@ namespace TestTaskKolgatina
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataBase>(opt => opt.UseMySql("server=localhost;userid=root;password=root;database=Employee;"));
+            services.AddDbContext<EmployeeContext>(opt => opt.UseMySql(Configuration.GetConnectionString("DataBase")));
             services.AddControllersWithViews();
         }
 
