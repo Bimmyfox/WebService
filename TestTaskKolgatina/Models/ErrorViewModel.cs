@@ -1,5 +1,3 @@
-using System;
-
 namespace TestTaskKolgatina.Models
 {
     public class ErrorViewModel

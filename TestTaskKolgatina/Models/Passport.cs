@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TestTaskKolgatina.Models
@@ -11,7 +10,5 @@ namespace TestTaskKolgatina.Models
         public int Id { get; set; }
         public string Type { get; set; }
         public string Number { get; set; }
-
-       // public ICollection<Employee> Employees { get; set; }
     }
 }

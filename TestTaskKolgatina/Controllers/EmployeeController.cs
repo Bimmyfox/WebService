@@ -5,28 +5,27 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using TestTaskKolgatina.Data;
 
-
 /*
 1. Добавлять сотрудников, в ответ должен приходить Id добавленного сотрудника. +
 2. Удалять сотрудников по Id. +
-3. Выводить список сотрудников для указанной компании. Все доступные поля. +
 4. Изменять сотрудника по его Id. Изменения должно быть только тех полей, которые указаны в запросе. +
  */
- 
 
 namespace TestTaskKolgatina.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController 
+    public class EmployeeController
     {
         readonly EmployeeContext _context;
+
 
         public EmployeeController(EmployeeContext context)
         {
             _context = context;
         }
+
 
         // GET: api/employees
         [HttpGet]
@@ -35,12 +34,12 @@ namespace TestTaskKolgatina.Controllers
             return _context.Employees.Include(s => s.Passport).ToList();
         }
 
-        
+
         // GET: api/employees/6
         [HttpGet("{companyId}")]
         public IQueryable<Employee> GetEmployeeByComanyId(int companyId)
         {
-            var employee = _context.Employees.Where(emp => emp.CompanyId == companyId);
+            var employee = _context.Employees.Where(emp => emp.CompanyId == companyId).Include(s => s.Passport);
 
             if (employee == null)
             {
@@ -56,11 +55,7 @@ namespace TestTaskKolgatina.Controllers
         [HttpDelete("{id}")]
         public ActionResult<Employee> DeleteEmployee(int id)
         {
-            //using (var context = CreateContext())
-            {
-            }
-                var employee = _context.Employees.Find(id);
-            //var employee =  _context.Employees
+            var employee = _context.Employees.Find(id);
 
             if (employee == null)
             {
@@ -80,18 +75,18 @@ namespace TestTaskKolgatina.Controllers
         {
             _context.Employees.Add(employee);
             _context.SaveChanges();
-            
+
             return employee.Id;
         }
+
 
         // PUT: api/employees/5
         [HttpPut("{id}")]
         public ActionResult<Employee> PutEmployee(int id, Employee employee)
-         {
+        {
             if (id != employee.Id)
             {
                 return null;
-                //BadRequest();
             }
 
             _context.Entry(employee).State = EntityState.Modified;

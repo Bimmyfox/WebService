@@ -27,7 +27,7 @@ namespace TestTaskKolgatina
                 try
                 {
                     var context = services.GetRequiredService<EmployeeContext>();
-                    context.Database.EnsureCreated();
+                    DbInitializer.Initialize(context);
                 }
                 catch (Exception ex)
                 {
