@@ -5,12 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using TestTaskKolgatina.Data;
 
-/*
-1. Добавлять сотрудников, в ответ должен приходить Id добавленного сотрудника. +
-2. Удалять сотрудников по Id. +
-4. Изменять сотрудника по его Id. Изменения должно быть только тех полей, которые указаны в запросе. +
- */
-
 namespace TestTaskKolgatina.Controllers
 {
 
@@ -84,12 +78,21 @@ namespace TestTaskKolgatina.Controllers
         [HttpPut("{id}")]
         public ActionResult<Employee> PutEmployee(int id, Employee employee)
         {
-            if (id != employee.Id)
+            var entity = _context.Employees.First(e => e.Id == id);
+
+            if (entity == null)
             {
                 return null;
             }
 
-            _context.Entry(employee).State = EntityState.Modified;
+            if (id != 0) entity.Id = id;
+            entity.Name = employee.Name ?? entity.Name;
+            entity.Surname = employee.Surname ?? entity.Surname;
+            entity.Phone = employee.Phone ?? entity.Phone;
+            entity.CompanyId = employee.CompanyId != 0 ? employee.CompanyId : entity.CompanyId;
+            entity.Passport = employee.Passport.Number != null && employee.Passport.Type != null
+                ? employee.Passport
+                : entity.Passport;
 
             try
             {
@@ -100,8 +103,7 @@ namespace TestTaskKolgatina.Controllers
                 throw;
             }
 
-            return employee;
+            return entity;
         }
-
     }
 }
