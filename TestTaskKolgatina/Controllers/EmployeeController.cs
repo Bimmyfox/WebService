@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using TestTaskKolgatina.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using TestTaskKolgatina.Data;
+using TestTaskKolgatina.Models;
 
 namespace TestTaskKolgatina.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController
+    public class EmployeeController : Controller
     {
         readonly EmployeeContext _context;
 
@@ -21,89 +22,108 @@ namespace TestTaskKolgatina.Controllers
         }
 
 
-        // GET: api/employees
+        // GET: api/employee
         [HttpGet]
         public ActionResult<IEnumerable<Employee>> GetEmployees()
         {
-            return _context.Employees.Include(s => s.Passport).ToList();
+            var employees = _context.Employees
+               .Include(s => s.Passport).ToList();
+
+            if (employees.Count == 0) return NoContent();
+            return employees;
         }
+    
 
-
-        // GET: api/employees/6
+        // GET: api/employee/6
         [HttpGet("{companyId}")]
-        public IQueryable<Employee> GetEmployeeByComanyId(int companyId)
+        public ActionResult<IEnumerable<Employee>> GetEmployeeByComanyId(int? companyId)
         {
-            var employee = _context.Employees.Where(emp => emp.CompanyId == companyId).Include(s => s.Passport);
+            if (companyId == null) return NotFound();
 
-            if (employee == null)
-            {
-                return null;
-            }
+            var employees = _context.Employees
+                .Where(emp => emp.CompanyId == companyId)
+                .Include(s => s.Passport)
+                .ToList();
 
-            return employee;
-
+            if (employees.Count == 0) return NotFound();
+            return employees;
         }
 
 
         // DELETE: api/employee/5
         [HttpDelete("{id}")]
-        public ActionResult<Employee> DeleteEmployee(int id)
+        public IActionResult DeleteEmployee(int? id)
         {
+            if (id == null) return NotFound();
+
             var employee = _context.Employees.Find(id);
+            if (employee == null) return NotFound();
 
-            if (employee == null)
+            try
             {
-                return null;
+                _context.Employees.Remove(employee);
+                _context.SaveChanges();
             }
-
-            _context.Employees.Remove(employee);
-            _context.SaveChanges();
-
-            return employee;
+            catch (DbUpdateException ex)
+            {
+                throw ex;
+            }
+            return Ok();
         }
 
 
-        // POST: api/employees
+        // POST: api/employee
         [HttpPost]
         public ActionResult<int> PostEmployee(Employee employee)
         {
-            _context.Employees.Add(employee);
-            _context.SaveChanges();
-
+            try
+            {
+                _context.Employees.Add(employee);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw ex;
+            }
             return employee.Id;
         }
 
 
         // PUT: api/employees/5
         [HttpPut("{id}")]
-        public ActionResult<Employee> PutEmployee(int id, Employee employee)
+        public IActionResult PutEmployee(int id, Employee employee)
         {
-            var entity = _context.Employees.First(e => e.Id == id);
+            if (employee == null) return NotFound();
 
-            if (entity == null)
+            try
             {
-                return null;
-            }
+                var entity = _context.Employees.First(e => e.Id == id);
+            
+            if (entity == null) return NotFound();
 
-            if (id != 0) entity.Id = id;
+
+            entity.Id = id;
             entity.Name = employee.Name ?? entity.Name;
             entity.Surname = employee.Surname ?? entity.Surname;
             entity.Phone = employee.Phone ?? entity.Phone;
             entity.CompanyId = employee.CompanyId != 0 ? employee.CompanyId : entity.CompanyId;
-            entity.Passport = employee.Passport.Number != null && employee.Passport.Type != null
+            entity.PassportId = employee.PassportId != 0 ? employee.PassportId : entity.PassportId;
+            entity.Passport = employee.Passport != null && employee.Passport.Number != null && employee.Passport.Type != null
                 ? employee.Passport
                 : entity.Passport;
 
-            try
-            {
                 _context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw;
+                throw ex;
+            }
+            catch (InvalidOperationException e)
+            {
+                throw e;
             }
 
-            return entity;
+            return Ok();
         }
     }
 }

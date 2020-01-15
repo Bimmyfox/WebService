@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using TestTaskKolgatina.Models;
 using TestTaskKolgatina.Data;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace TestTaskKolgatina.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PassportController
+    public class PassportController : Controller
     {
         readonly EmployeeContext _context;
 
@@ -22,41 +22,47 @@ namespace TestTaskKolgatina.Controllers
 
         //GET: api/passport
         [HttpGet]
-        public ActionResult<IEnumerable<Passport>> GetPassport()
+        public ActionResult<IEnumerable<Passport>> GetPassports()
         {
-            return _context.Passports.ToList();
+            var passports = _context.Passports.ToList();
+
+            if (passports.Count == 0) return NoContent(); ;
+
+            return passports;
         }
 
 
-        // GET: api/passport/5
+        // GET: api/passport/4
         [HttpGet("{id}")]
-        public ActionResult<Passport> GetPassport(int id)
+        public ActionResult<Passport> GetPassport(int? id)
         {
-            var passport =  _context.Passports.Find(id);
+            if (id == null) return NotFound();
+            var passport = _context.Passports.Find(id);
 
-            if (passport == null)
-            {
-                return null;
-            }
-
+            if (passport == null) return NotFound();
             return passport;
         }
 
 
         // DELETE: api/passport/5
         [HttpDelete("{id}")]
-        public ActionResult<Passport> DeletePassport(int id)
+        public IActionResult DeletePassport(int ?id)
         {
+            if (id == null) return NotFound();
+
             var passport = _context.Passports.Find(id);
-            if (passport == null)
+            if (passport == null) return NotFound();
+
+            try
             {
-                return null;
+                _context.Passports.Remove(passport);
+                _context.SaveChanges();
             }
-
-            _context.Passports.Remove(passport);
-            _context.SaveChanges();
-
-            return passport;
+            catch (DbUpdateException ex)
+            {
+                throw ex;
+            }
+            return Ok();
         }
 
 
@@ -64,34 +70,42 @@ namespace TestTaskKolgatina.Controllers
         [HttpPost]
         public ActionResult<int> PostPassport(Passport passport)
         {
-            _context.Passports.Add(passport);
-            _context.SaveChanges();
-
+            try
+            {
+                _context.Passports.Add(passport);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw ex;
+            }
             return passport.Id;
         }
+
 
         // PUT: api/passport/5
         [HttpPut("{id}")]
         public IActionResult PutPassport(int id, Passport passport)
         {
-            if (id != passport.Id)
-            {
-                return null;
-                //BadRequest();
-            }
+            if (passport == null) return NotFound();
 
-            _context.Entry(passport).State = EntityState.Modified;
+            var entity = _context.Passports.First(e => e.Id == id);
+
+            if (entity == null) return NotFound();
+
+            entity.Id = id;
+            entity.Type = passport.Type ?? entity.Type;
+            entity.Number = passport.Number ?? entity.Number;
 
             try
             {
-               _context.SaveChanges();
+                _context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw;
+                throw ex;
             }
-
-            return null;
+            return Ok();
         }
     }
 }
