@@ -1,9 +1,9 @@
-using TestTaskKolgatina.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using TestTaskKolgatina.Data;
 
 namespace TestTaskKolgatina
 {

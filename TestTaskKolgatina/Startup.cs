@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TestTaskKolgatina.Data;
 using Microsoft.EntityFrameworkCore;
+using TestTaskKolgatina.Data;
 
 namespace TestTaskKolgatina
 {

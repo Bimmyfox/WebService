@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using TestTaskKolgatina.Models;
 using TestTaskKolgatina.Data;
-using System.Linq;
 
 namespace TestTaskKolgatina.Controllers
 {
@@ -11,12 +11,12 @@ namespace TestTaskKolgatina.Controllers
     [ApiController]
     public class PassportController : Controller
     {
-        readonly EmployeeContext _context;
+        readonly EmployeeContext context;
 
 
         public PassportController(EmployeeContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
 
@@ -24,7 +24,7 @@ namespace TestTaskKolgatina.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Passport>> GetPassports()
         {
-            var passports = _context.Passports.ToList();
+            var passports = context.Passports.ToList();
 
             if (passports.Count == 0) return NoContent(); ;
 
@@ -37,7 +37,7 @@ namespace TestTaskKolgatina.Controllers
         public ActionResult<Passport> GetPassport(int? id)
         {
             if (id == null) return NotFound();
-            var passport = _context.Passports.Find(id);
+            var passport = context.Passports.Find(id);
 
             if (passport == null) return NotFound();
             return passport;
@@ -46,17 +46,17 @@ namespace TestTaskKolgatina.Controllers
 
         // DELETE: api/passport/5
         [HttpDelete("{id}")]
-        public IActionResult DeletePassport(int ?id)
+        public IActionResult DeletePassport(int? id)
         {
             if (id == null) return NotFound();
 
-            var passport = _context.Passports.Find(id);
+            var passport = context.Passports.Find(id);
             if (passport == null) return NotFound();
 
             try
             {
-                _context.Passports.Remove(passport);
-                _context.SaveChanges();
+                context.Passports.Remove(passport);
+                context.SaveChanges();
             }
             catch (DbUpdateException ex)
             {
@@ -72,8 +72,8 @@ namespace TestTaskKolgatina.Controllers
         {
             try
             {
-                _context.Passports.Add(passport);
-                _context.SaveChanges();
+                context.Passports.Add(passport);
+                context.SaveChanges();
             }
             catch (DbUpdateException ex)
             {
@@ -89,7 +89,7 @@ namespace TestTaskKolgatina.Controllers
         {
             if (passport == null) return NotFound();
 
-            var entity = _context.Passports.First(e => e.Id == id);
+            var entity = context.Passports.Find(id);
 
             if (entity == null) return NotFound();
 
@@ -99,7 +99,7 @@ namespace TestTaskKolgatina.Controllers
 
             try
             {
-                _context.SaveChanges();
+                context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {
